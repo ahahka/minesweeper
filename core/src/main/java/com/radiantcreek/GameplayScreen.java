@@ -23,7 +23,7 @@ public class GameplayScreen implements Screen {
     //zoom in/out? Keep everything scaled?
     private Viewport viewport;
 
-
+    private GameBoard gameBoard;
 
 
     /*
@@ -54,6 +54,8 @@ public class GameplayScreen implements Screen {
         //I just know that this was the solution to an annoying problem I had
         shapeRenderer.setAutoShapeType(true);
 
+        gameBoard = new GameBoard(this);
+
     }
 
 
@@ -71,11 +73,11 @@ public class GameplayScreen implements Screen {
         //process player input, AI
         //all drawings of shapes MUST go between begin/end
         shapeRenderer.begin();
-        shapeRenderer.circle(100, 100, 100);
         shapeRenderer.end();
 
         //all drawing of graphics MUST be between begin/end
         spriteBatch.begin();
+        gameBoard.draw(spriteBatch);
         spriteBatch.end();
     }
 
@@ -102,7 +104,8 @@ public class GameplayScreen implements Screen {
 
     @Override
     public void dispose() {
-        
+        spriteBatch.dispose();
+        shapeRenderer.dispose();
     }
     
 }
