@@ -18,7 +18,7 @@ public class Location {
     }
 
     public int getRow() {
-        return col;
+        return row;
     }
 
     public String toString() {
@@ -27,6 +27,16 @@ public class Location {
 
     public boolean equals (Location other) {
         return this.col == other.col && this.row == other.row;
+    }
+
+    public Location() {
+        row = 0;
+        col = 0;
+    }
+
+    public Location(int row, int col) {
+        this.row = row;
+        this.col = col;
     }
 
 }

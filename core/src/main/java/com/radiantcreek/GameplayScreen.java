@@ -1,10 +1,15 @@
 package com.radiantcreek;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -24,6 +29,10 @@ public class GameplayScreen implements Screen {
     private Viewport viewport;
 
     private GameBoard gameBoard;
+
+    private BitmapFont defaultFont = new BitmapFont();
+    private long gameTimer; //the game time counting up
+    private long startTime; //timestamp of the start of the game
 
 
     /*
@@ -55,10 +64,33 @@ public class GameplayScreen implements Screen {
         shapeRenderer.setAutoShapeType(true);
 
         gameBoard = new GameBoard(this);
+        startTime = TimeUtils.nanoTime(); //time stamp the beginning of the game
 
     }
 
+    private void handleMouseClick() {
+        //if there is a left click, fires one time per click
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            //System.out.println("Left click at (" + Gdx.input.getX() + "," + Gdx.input.getY() + ")");
+            //System.out.println(gameBoard.getTileAt(Gdx.input.getX(), Gdx.input.getY()));
+            gameBoard.handleLeftClick(Gdx.input.getX(), Gdx.input.getY());
+        }
+        else if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            gameBoard.handleRightClick(Gdx.input.getX(), Gdx.input.getY());
+        }
+    }
 
+    private void clearScreen(){
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    private void drawGUI() {
+        gameTimer = TimeUtils.nanoTime() - startTime;
+        defaultFont.draw(spriteBatch,"Time: " + gameTimer/1000000000, 450, 670);
+        defaultFont.draw(spriteBatch,"Total Bombs Left: " +  (gameBoard.getTotalBombs() - gameBoard.getNumFlagsPlaced()), 100, 670);
+        defaultFont.draw(spriteBatch,"Total Flags Placed: " +  gameBoard.getNumFlagsPlaced(), 650, 670);
+    }
     /*
      * this method runs as fast as it can (or as fast as it can for a set FPS)
      * repeatedly, constantly looped
@@ -69,7 +101,9 @@ public class GameplayScreen implements Screen {
      */
     @Override
     public void render(float delta) {
+        clearScreen();
         //get player input
+        handleMouseClick();
         //process player input, AI
         //all drawings of shapes MUST go between begin/end
         shapeRenderer.begin();
@@ -77,6 +111,7 @@ public class GameplayScreen implements Screen {
 
         //all drawing of graphics MUST be between begin/end
         spriteBatch.begin();
+        drawGUI();
         gameBoard.draw(spriteBatch);
         spriteBatch.end();
     }
@@ -89,7 +124,7 @@ public class GameplayScreen implements Screen {
     @Override
     public void pause() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'pause'");
+        //throw new UnsupportedOperationException("Unimplemented method 'pause'");
     }
 
     @Override

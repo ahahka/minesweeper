@@ -1,5 +1,6 @@
 package com.radiantcreek;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -8,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class GameBoard {
     private int[][] board; //your data structure
     private int numBombs; //the number of bombs in the grid
-    private int numFlags; //the number of flags that STILL have to be placed by the player
+    private int numFlags; //the number of flags that have been placed
     public static final int BOMB = -1; //help with readability
     private GameplayScreen gameplayScreen;
 
@@ -24,13 +25,15 @@ public class GameBoard {
     private Texture eightTile;
     private Texture bombTile;
     private Texture flagTile;
+
+    private boolean firstClick = false;
     
 
     public GameBoard(GameplayScreen gameplayScreen) {
         this.gameplayScreen = gameplayScreen;
         board = new int[16][30];
         numBombs = 50;
-        numFlags = numBombs;
+        numFlags = 0;
         loadGraphics();
         addBombs();
         initBoardNumbers();
@@ -72,205 +75,259 @@ public class GameBoard {
             if (board[x][y] == -1) {
                 i--;
             }
-            board[x][y] = -1;
+            else if (board[x][y] <10) {
+                board[x][y] = -1;
+            }
+            else {
+                i--;
+            }
             i++;
         }
     }
-    
+
+    //START
+
+    //return the Location on the GameBoard corresponding to a given mouseX, MouseY position
+    public Location getTileAt(int mouseX, int mouseY) {
+        System.out.println(mouseX/25-4);
+        System.out.println(mouseY/25-4);
+        Location loc = new Location(mouseX/25-4, mouseY/25-4);
+        System.out.println(loc);
+        if (loc.getRow() < 0 || loc.getRow() > board[0].length-1 ||loc.getCol() < 0 || loc.getCol() > board.length-1) {
+            return null;
+        }
+        System.out.println(loc.getRow() + " " + loc.getCol());
+        return loc;
+    }
+
+    public void handleLeftClick(int x, int y) {
+        Location loc = getTileAt(x, y);
+        if (loc!= null && firstClick == false && board[loc.getCol()][loc.getRow()] != -1) {
+            //firstClick = true;
+        }
+        if (loc != null && firstClick == false && board[loc.getCol()][loc.getRow()] == -1) {
+            //firstClick = true;
+            board[loc.getCol()][loc.getRow()] = surroundingBombs(loc.getCol(), loc.getRow());
+            int i = 0;
+            while (i < 1) {
+                Random random = new Random();
+                int a = random.nextInt(board.length);
+                int b = random.nextInt(board[0].length);
+                if (board[a][b] == -1) {
+                    i--;
+                }
+                else if (board[a][b] <10) {
+                    board[a][b] = -1;
+                    if (a > 0 && b < board[0].length -1 && board[a-1][b+1] != -1) {
+                        board[a-1][b+1] = surroundingBombs(a-1, b+1);
+                    }
+                    if (b > 0 && a < board.length -1 && board[a+1][b-1] != -1) {
+                        board[a+1][b-1] = surroundingBombs(a+1, b-1);
+                    }
+                    if (a > 0 && b > 0 && board[a-1][b-1] != -1) {
+                        board[a-1][b-1] = surroundingBombs(a-1, b-1);
+                    }
+                    if (a < board.length-1 && b < board[0].length-1 && board[a+1][b+1] != -1) {
+                        board[a+1][b+1] = surroundingBombs(a+1, b+1);
+                    }
+                    if (a < board.length-1 && board[a+1][b] != -1) {
+                        board[a+1][b] = surroundingBombs(a+1, b);
+                    }
+                    if (b < board[0].length-1 && board[a][b+1] != -1) {
+                        board[a][b+1] = surroundingBombs(a, b+1);
+                    }
+                    if (a> 0 && board[a-1][b] != -1) {
+                        board[a-1][b] = surroundingBombs(a-1, b);
+                    }
+                    if (b> 0 && board[a][b-1] != -1) {
+                        board[a][b-1] = surroundingBombs(a, b-1);
+                    }
+                    
+                    a = loc.getCol();
+                    b= loc.getRow();
+
+
+                    if (a > 0 && b < board[0].length -1 && board[a-1][b+1] != -1) {
+                        board[a-1][b+1] = surroundingBombs(a-1, b+1);
+                    }
+                    if (b > 0 && a < board.length -1 && board[a+1][b-1] != -1) {
+                        board[a+1][b-1] = surroundingBombs(a+1, b-1);
+                    }
+                    if (a > 0 && b > 0 && board[a-1][b-1] != -1) {
+                        board[a-1][b-1] = surroundingBombs(a-1, b-1);
+                    }
+                    if (a < board.length-1 && b < board[0].length-1 && board[a+1][b+1] != -1) {
+                        board[a+1][b+1] = surroundingBombs(a+1, b+1);
+                    }
+                    if (a < board.length-1 && board[a+1][b] != -1) {
+                        board[a+1][b] = surroundingBombs(a+1, b);
+                    }
+                    if (b < board[0].length-1 && board[a][b+1] != -1) {
+                        board[a][b+1] = surroundingBombs(a, b+1);
+                    }
+                    if (a> 0 && board[a-1][b] != -1) {
+                        board[a-1][b] = surroundingBombs(a-1, b);
+                    }
+                    if (b> 0 && board[a][b-1] != -1) {
+                        board[a][b-1] = surroundingBombs(a, b-1);
+                    }
+                }
+                else {
+                    i--;
+                }
+                i++;
+            }
+            //initBoardNumbers();
+        }
+        if (loc!=null && board[loc.getCol()][loc.getRow()] == 0) {
+            firstClick = true;
+            System.out.println("FIRST CLICK");
+            clearNeighbours(loc);
+        }
+        else if (loc != null && board[loc.getCol()][loc.getRow()] < 9) {
+            board[loc.getCol()][loc.getRow()] += 10;
+            System.out.println(board[loc.getCol()][loc.getRow()]);
+        }
+    }
+
+    public void clearNeighbours(Location loc) {
+
+        //Find the neighbours
+        ArrayList<Location> neighbours = new ArrayList<>();
+        neighbours.add(new Location(loc.getRow()-1, loc.getCol()));
+        neighbours.add(new Location(loc.getRow(),   loc.getCol()-1));
+        neighbours.add(new Location(loc.getRow(),   loc.getCol()+1));
+        neighbours.add(new Location(loc.getRow()+1, loc.getCol()));
+
+        neighbours.add(new Location(loc.getRow()+1, loc.getCol()+1));
+        neighbours.add(new Location(loc.getRow()+1, loc.getCol()-1));
+        neighbours.add(new Location(loc.getRow()-1, loc.getCol()-1));
+        neighbours.add(new Location(loc.getRow()-1, loc.getCol()+1));
+
+        //uncover the trigger tile
+        board[loc.getCol()][loc.getRow()] += 10;
+
+        for (int i = 0; i<neighbours.size(); i++) {
+            Location current = neighbours.get(i);
+            if (current.getRow() < 0 || current.getRow() > board[0].length-1 ||current.getCol() < 0 || current.getCol() > board.length-1) {
+                current = null;
+            }
+            
+            if (current != null && board[current.getCol()][current.getRow()] > 0 && board[current.getCol()][current.getRow()] < 9) {
+                board[current.getCol()][current.getRow()] += 10;
+            }
+            //if location exists and an uncovered blank tile
+            if (i<4 && current!=null && board[current.getCol()][current.getRow()] == 0) {
+                clearNeighbours(current);
+                System.out.println("HERE");
+            }
+        }
+
+    }
+
+    public void handleRightClick(int x, int y) {
+        Location loc = getTileAt(x, y);
+        if (loc != null) {
+            if (board[loc.getCol()][loc.getRow()] < 9) {
+                board[loc.getCol()][loc.getRow()] += 20;
+                numFlags++;
+            }
+            else if (board[loc.getCol()][loc.getRow()] >= 19){
+                board[loc.getCol()][loc.getRow()] -= 20;
+                numFlags--;
+            }
+            System.out.println(board[loc.getCol()][loc.getRow()]);
+        }
+    }
+
+    public int getNumFlagsPlaced() {
+        return numFlags;
+    }
+
+    public int getTotalBombs() {
+        return numBombs;
+    }
+
     //loop thru entire board and count and place the correct number in each non bomb space
     public void initBoardNumbers() {
         for (int i = 0; i<board.length; i++) {
             for (int j = 0; j<board[1].length; j++) {
                 if (board[i][j] != -1 && surroundingBombs(i, j) != 0) {
                     board[i][j] = surroundingBombs(i,j);
+                    System.out.print(board[i][j]);
+                }
+                else {
+                    System.out.print(0);
                 }
             }
+            System.out.println();
         }
     }
 
     private int surroundingBombs(int i,int j) {
         int result = 0;
-        if (i>0 && j> 0 && i<board.length-1 && j<board[0].length-1) {
-            if (board[i-1][j-1] == -1) {
-                result++;
-            }
-            if (board[i-1][j+1] == -1) {
-                result++;
-            }
-            if (board[i-1][j] == -1) {
-                result++;
-            }
-            if (board[i+1][j-1] == -1) {
-                result++;
-            }
-            if (board[i+1][j+1] == -1) {
-                result++;
-            }
-            if (board[i+1][j] == -1) {
-                result++;
-            }
-            if (board[i][j-1] == -1) {
-                result++;
-            }
-            if (board[i][j+1] == -1) {
-                result++;
-            }
+        if (i>0 && board[i-1][j] == BOMB) {
+            result++;
         }
-        else if (i==0 && j>0 && j<board[0].length-1) {
-            if (board[i+1][j-1] == -1) {
-                result++;
-            }
-            if (board[i+1][j+1] == -1) {
-                result++;
-            }
-            if (board[i+1][j] == -1) {
-                result++;
-            }
-            if (board[i][j-1] == -1) {
-                result++;
-            }
-            if (board[i][j+1] == -1) {
-                result++;
-            }
+        if (i<board.length-1 && board[i+1][j] == BOMB) {
+            result++;
         }
-        else if (i==board.length-1 && j>0 && j<board[0].length-1) {
-            if (board[i-1][j-1] == -1) {
-                result++;
-            }
-            if (board[i-1][j+1] == -1) {
-                result++;
-            }
-            if (board[i-1][j] == -1) {
-                result++;
-            }
-            if (board[i][j-1] == -1) {
-                result++;
-            }
-            if (board[i][j+1] == -1) {
-                result++;
-            }
+        if (j>0 && board[i][j-1] == BOMB) {
+            result++;
         }
-        else if (j==0 && i>0 && i<board.length-1) {
-            if (board[i-1][j+1] == -1) {
-                result++;
-            }
-            if (board[i-1][j] == -1) {
-                result++;
-            }
-            if (board[i+1][j+1] == -1) {
-                result++;
-            }
-            if (board[i+1][j] == -1) {
-                result++;
-            }
-            if (board[i][j+1] == -1) {
-                result++;
-            }
+        if (j<board[0].length-1 && board[i][j+1]==BOMB) {
+            result++;
         }
-        else if (j==board[0].length-1 && i>0 && i<board.length-1) {
-            if (board[i-1][j-1] == -1) {
-                result++;
-            }
-
-            if (board[i-1][j] == -1) {
-                result++;
-            }
-            if (board[i+1][j-1] == -1) {
-                result++;
-            }
-            
-            if (board[i+1][j] == -1) {
-                result++;
-            }
-            if (board[i][j-1] == -1) {
-                result++;
-            }
-            
+        if (i>0 && j > 0 && board[i-1][j-1]==BOMB) {
+            result++;
+        }  
+        if (i>0 && j < board[0].length-1 && board[i-1][j+1]==BOMB) {
+            result++;
         }
-        else if (i == 0 && j == 0) {
-            if (board[i+1][j+1] == -1) {
-                result++;
-            }
-            if (board[i+1][j] == -1) {
-                result++;
-            }
-            if (board[i][j+1] == -1) {
-                result++;
-            }
+        if (i<board.length-1 && j > 0 && board[i+1][j-1]==BOMB) {
+            result++;
         }
-        else if (i == board.length-1 && j == 0) {
-            if (board[i][j+1] == -1) {
-                result++;
-            }
-            if (board[i-1][j+1] == -1) {
-                result++;
-            }
-            if (board[i-1][j] == -1) {
-                result++;
-            }
-        }
-        else if (i == 0 && j == board[0].length-1) {
-            if (board[i+1][j] == -1) {
-                result++;
-            }
-            if (board[i+1][j-1] == -1) {
-                result++;
-            }
-            if (board[i][j-1] == -1) {
-                result++;
-            }
-        }
-        else if (i == board.length-1 && j == board[0].length-1) {
-            if (board[i][j-1] == -1) {
-                result++;
-            }
-            if (board[i-1][j] == -1) {
-                result++;
-            }
-            if (board[i-1][j-1] == -1) {
-                result++;
-            }
+        if (i<board.length-1 && j < board[0].length-1 && board[i+1][j+1]==BOMB) {
+            result++;
         }
         return result;
     }
+
+    //END
 
     public void draw(SpriteBatch spriteBatch) {
         int xOffset = 100;
         int yOffset = 600;
         for (int i = 0; i< board.length; i++) {
             for (int j = 0; j<board[1].length; j++) {
-                if (board[i][j] == 9) {
-                    spriteBatch.draw(bombTile, j*25+xOffset, yOffset-i*25);
-                }
-                //temp
-                if (board[i][j] == -1) {
+                if (board[i][j] == 9){// || board[i][j] == -1) {
                     spriteBatch.draw(bombTile, j*25+xOffset, yOffset-i*25);
                 }
                 else if (board[i][j] == 10) {
                     spriteBatch.draw(emptyFloorTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 11 || board[i][j] == 1) {
+                else if (board[i][j] == 11){// || board[i][j] == 1) {
                     spriteBatch.draw(oneTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 12 || board[i][j] == 2) {
+                else if (board[i][j] == 12){// || board[i][j] == 2) {
                     spriteBatch.draw(twoTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 13 || board[i][j] == 3) {
+                else if (board[i][j] == 13){// || board[i][j] == 3) {
                     spriteBatch.draw(threeTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 14 || board[i][j] == 4) {
+                else if (board[i][j] == 14){// || board[i][j] == 4) {
                     spriteBatch.draw(fourTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 15 || board[i][j] == 5) {
+                else if (board[i][j] == 15){// || board[i][j] == 5) {
                     spriteBatch.draw(fiveTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 16 || board[i][j] == 6) {
+                else if (board[i][j] == 16){// || board[i][j] == 6) {
                     spriteBatch.draw(sixTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 17 || board[i][j] == 7) {
+                else if (board[i][j] == 17){// || board[i][j] == 7) {
                     spriteBatch.draw(sevenTile, j*25+xOffset, yOffset-i*25);
                 }
-                else if (board[i][j] == 18 || board[i][j] == 8) {
+                else if (board[i][j] == 18){// || board[i][j] == 8) {
                     spriteBatch.draw(eightTile, j*25+xOffset, yOffset-i*25);
                 }
                 else if (board[i][j] >= 19 && board[i][j] <= 28) {
@@ -282,4 +339,6 @@ public class GameBoard {
             }
         }
     }
+
+    
 }
