@@ -78,6 +78,11 @@ public class GameplayScreen implements Screen {
         else if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
             gameBoard.handleRightClick(Gdx.input.getX(), Gdx.input.getY());
         }
+
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+            gameBoard = new GameBoard(this);
+            startTime = TimeUtils.nanoTime();
+        }
     }
 
     private void clearScreen(){
@@ -90,6 +95,7 @@ public class GameplayScreen implements Screen {
         defaultFont.draw(spriteBatch,"Time: " + gameTimer/1000000000, 450, 670);
         defaultFont.draw(spriteBatch,"Total Bombs Left: " +  (gameBoard.getTotalBombs() - gameBoard.getNumFlagsPlaced()), 100, 670);
         defaultFont.draw(spriteBatch,"Total Flags Placed: " +  gameBoard.getNumFlagsPlaced(), 650, 670);
+        defaultFont.draw(spriteBatch,"Press Enter to restart", 400, 200);
     }
     /*
      * this method runs as fast as it can (or as fast as it can for a set FPS)
