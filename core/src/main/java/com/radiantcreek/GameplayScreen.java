@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+//import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.audio.Music;
 
 public class GameplayScreen implements Screen {
 
@@ -45,6 +47,9 @@ public class GameplayScreen implements Screen {
     private long gameTimer; //the game time counting up
     private long startTime; //timestamp of the start of the game
 
+    private Music backgroundMusic;
+
+
 
     /*
      * runs one time, at the very beginning
@@ -77,14 +82,19 @@ public class GameplayScreen implements Screen {
         gameBoard = new GameBoard(this);
         startTime = TimeUtils.nanoTime(); //time stamp the beginning of the game
 
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/TallEndMC.mp3"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(0.5f); // 50% volume
+        backgroundMusic.play();
+
     }
 
     private void handleMouseClick() {
         if (gameOn){
             //if there is a left click, fires one time per click
             if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-                //System.out.println("Left click at (" + Gdx.input.getX() + "," + Gdx.input.getY() + ")");
-                //System.out.println(gameBoard.getTileAt(Gdx.input.getX(), Gdx.input.getY()));
+                //Vector2 world = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+                //gameBoard.handleLeftClick((int) world.x, (int) world.y);
                 gameBoard.handleLeftClick(Gdx.input.getX(), Gdx.input.getY());
             }
             else if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
@@ -96,6 +106,7 @@ public class GameplayScreen implements Screen {
             gameBoard = new GameBoard(this);
             startTime = TimeUtils.nanoTime();
             gameOn = true;
+            bombsFound = true;
         }
     }
 
@@ -172,6 +183,10 @@ public class GameplayScreen implements Screen {
     public void dispose() {
         spriteBatch.dispose();
         shapeRenderer.dispose();
+        defaultFont.dispose();
+        if (backgroundMusic != null) {
+            backgroundMusic.dispose();
+        }
     }
     
 }
