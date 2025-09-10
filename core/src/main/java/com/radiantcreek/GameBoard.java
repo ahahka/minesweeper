@@ -290,6 +290,21 @@ public class GameBoard {
             }
             System.out.println(board[loc.getCol()][loc.getRow()]);
         }
+        
+        boolean found = false;
+        for (int i = 0; i< board.length; i++) {
+            for (int j = 0; j< board[0].length; j++) {
+                if (board[i][j] < 9) {
+                    found = true;
+                }
+            }
+        }
+
+        // if there are no bombs left
+        if (!found) {
+            gameplayScreen.setGameOn(found);
+            gameplayScreen.setBombsFound(found);
+        }
     }
 
     public int getNumFlagsPlaced() {
