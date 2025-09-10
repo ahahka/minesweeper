@@ -92,7 +92,7 @@ public class GameplayScreen implements Screen {
             }
         }
 
-        else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
             gameBoard = new GameBoard(this);
             startTime = TimeUtils.nanoTime();
             gameOn = true;

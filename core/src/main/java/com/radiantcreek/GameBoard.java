@@ -111,27 +111,51 @@ public class GameBoard {
                 if (board[a][b] <10 && board[a][b] > -1) {
                     board[a][b] = -1;
                     if (a > 0 && b < board[0].length -1 && board[a-1][b+1] != -1) {
+                        if (board[a-1][b+1] > 18) {
+                            numFlags--;
+                        }
                         board[a-1][b+1] = surroundingBombs(a-1, b+1);
                     }
                     if (b > 0 && a < board.length -1 && board[a+1][b-1] != -1) {
+                        if (board[a+1][b-1] > 18) {
+                            numFlags--;
+                        }
                         board[a+1][b-1] = surroundingBombs(a+1, b-1);
                     }
                     if (a > 0 && b > 0 && board[a-1][b-1] != -1) {
+                        if (board[a-1][b-1] > 18) {
+                            numFlags--;
+                        }
                         board[a-1][b-1] = surroundingBombs(a-1, b-1);
                     }
                     if (a < board.length-1 && b < board[0].length-1 && board[a+1][b+1] != -1) {
+                        if (board[a+1][b+1] > 18) {
+                            numFlags--;
+                        }
                         board[a+1][b+1] = surroundingBombs(a+1, b+1);
                     }
                     if (a < board.length-1 && board[a+1][b] != -1) {
+                        if (board[a+1][b] > 18) {
+                            numFlags--;
+                        }
                         board[a+1][b] = surroundingBombs(a+1, b);
                     }
                     if (b < board[0].length-1 && board[a][b+1] != -1) {
+                        if (board[a][b+1] > 18) {
+                            numFlags--;
+                        }
                         board[a][b+1] = surroundingBombs(a, b+1);
                     }
                     if (a> 0 && board[a-1][b] != -1) {
+                        if (board[a-1][b] > 18) {
+                            numFlags--;
+                        }
                         board[a-1][b] = surroundingBombs(a-1, b);
                     }
                     if (b> 0 && board[a][b-1] != -1) {
+                        if (board[a][b-1] > 18) {
+                            numFlags--;
+                        }
                         board[a][b-1] = surroundingBombs(a, b-1);
                     }
                     
@@ -140,27 +164,51 @@ public class GameBoard {
 
 
                     if (a > 0 && b < board[0].length -1 && board[a-1][b+1] != -1) {
+                        if (board[a-1][b+1] > 18) {
+                            numFlags--;
+                        }
                         board[a-1][b+1] = surroundingBombs(a-1, b+1);
                     }
                     if (b > 0 && a < board.length -1 && board[a+1][b-1] != -1) {
+                        if (board[a+1][b-1] > 18) {
+                            numFlags--;
+                        }
                         board[a+1][b-1] = surroundingBombs(a+1, b-1);
                     }
                     if (a > 0 && b > 0 && board[a-1][b-1] != -1) {
+                        if (board[a-1][b-1] > 18) {
+                            numFlags--;
+                        }
                         board[a-1][b-1] = surroundingBombs(a-1, b-1);
                     }
                     if (a < board.length-1 && b < board[0].length-1 && board[a+1][b+1] != -1) {
+                        if (board[a+1][b+1] > 18) {
+                            numFlags--;
+                        }
                         board[a+1][b+1] = surroundingBombs(a+1, b+1);
                     }
                     if (a < board.length-1 && board[a+1][b] != -1) {
+                        if (board[a+1][b] > 18) {
+                            numFlags--;
+                        }
                         board[a+1][b] = surroundingBombs(a+1, b);
                     }
                     if (b < board[0].length-1 && board[a][b+1] != -1) {
+                        if (board[a][b+1] > 18) {
+                            numFlags--;
+                        }
                         board[a][b+1] = surroundingBombs(a, b+1);
                     }
                     if (a> 0 && board[a-1][b] != -1) {
+                        if (board[a-1][b] > 18) {
+                            numFlags--;
+                        }
                         board[a-1][b] = surroundingBombs(a-1, b);
                     }
                     if (b> 0 && board[a][b-1] != -1) {
+                        if (board[a][b-1] > 18) {
+                            numFlags--;
+                        }
                         board[a][b-1] = surroundingBombs(a, b-1);
                     }
                     i++;
@@ -182,7 +230,7 @@ public class GameBoard {
         boolean found = false;
         for (int i = 0; i< board.length; i++) {
             for (int j = 0; j< board[0].length; j++) {
-                if (board[i][j] == -1) {
+                if (board[i][j] < 9) {
                     found = true;
                 }
             }
@@ -232,7 +280,7 @@ public class GameBoard {
     public void handleRightClick(int x, int y) {
         Location loc = getTileAt(x, y);
         if (loc != null) {
-            if (board[loc.getCol()][loc.getRow()] < 9) {
+            if (board[loc.getCol()][loc.getRow()] < 9 && numFlags < 50) {
                 board[loc.getCol()][loc.getRow()] += 20;
                 numFlags++;
             }
