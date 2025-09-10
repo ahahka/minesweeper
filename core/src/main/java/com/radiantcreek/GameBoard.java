@@ -85,8 +85,6 @@ public class GameBoard {
         }
     }
 
-    //START
-
     //return the Location on the GameBoard corresponding to a given mouseX, MouseY position
     public Location getTileAt(int mouseX, int mouseY) {
         System.out.println(mouseX/25-4);
@@ -102,9 +100,6 @@ public class GameBoard {
 
     public void handleLeftClick(int x, int y) {
         Location loc = getTileAt(x, y);
-        if (loc!= null && firstClick == false && board[loc.getCol()][loc.getRow()] != -1) {
-            //firstClick = true;
-        }
         if (loc != null && firstClick == false && board[loc.getCol()][loc.getRow()] == -1) {
             //firstClick = true;
             board[loc.getCol()][loc.getRow()] = surroundingBombs(loc.getCol(), loc.getRow());
@@ -113,10 +108,7 @@ public class GameBoard {
                 Random random = new Random();
                 int a = random.nextInt(board.length);
                 int b = random.nextInt(board[0].length);
-                if (board[a][b] == -1) {
-                    i--;
-                }
-                else if (board[a][b] <10) {
+                if (board[a][b] <10 && board[a][b] > -1) {
                     board[a][b] = -1;
                     if (a > 0 && b < board[0].length -1 && board[a-1][b+1] != -1) {
                         board[a-1][b+1] = surroundingBombs(a-1, b+1);
@@ -171,22 +163,35 @@ public class GameBoard {
                     if (b> 0 && board[a][b-1] != -1) {
                         board[a][b-1] = surroundingBombs(a, b-1);
                     }
+                    i++;
                 }
-                else {
-                    i--;
-                }
-                i++;
             }
-            //initBoardNumbers();
         }
         if (loc!=null && board[loc.getCol()][loc.getRow()] == 0) {
             firstClick = true;
-            System.out.println("FIRST CLICK");
             clearNeighbours(loc);
         }
+
         else if (loc != null && board[loc.getCol()][loc.getRow()] < 9) {
+            if (board[loc.getCol()][loc.getRow()] == -1) {
+                gameplayScreen.setGameOn(false);
+            }
             board[loc.getCol()][loc.getRow()] += 10;
             System.out.println(board[loc.getCol()][loc.getRow()]);
+        }
+        boolean found = false;
+        for (int i = 0; i< board.length; i++) {
+            for (int j = 0; j< board[0].length; j++) {
+                if (board[i][j] == -1) {
+                    found = true;
+                }
+            }
+        }
+
+        // if there are no bombs left
+        if (!found) {
+            gameplayScreen.setGameOn(found);
+            gameplayScreen.setBombsFound(found);
         }
     }
 
@@ -219,7 +224,6 @@ public class GameBoard {
             //if location exists and an uncovered blank tile
             if (i<4 && current!=null && board[current.getCol()][current.getRow()] == 0) {
                 clearNeighbours(current);
-                System.out.println("HERE");
             }
         }
 
@@ -293,8 +297,6 @@ public class GameBoard {
         return result;
     }
 
-    //END
-
     public void draw(SpriteBatch spriteBatch) {
         int xOffset = 100;
         int yOffset = 600;
@@ -339,7 +341,4 @@ public class GameBoard {
             }
         }
     }
-
-
-    
 }

@@ -15,6 +15,17 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class GameplayScreen implements Screen {
 
+    private boolean gameOn = true;
+    private boolean bombsFound = true;
+
+    public void setGameOn(boolean gameOn) {
+        this.gameOn = gameOn;
+    }
+
+    public void setBombsFound(boolean zerosFound) {
+        this.bombsFound = zerosFound;
+    }
+
     //Object that draws all our sprite graphics: jpgs, pngs, etc.
     private SpriteBatch spriteBatch;
 
@@ -69,19 +80,22 @@ public class GameplayScreen implements Screen {
     }
 
     private void handleMouseClick() {
-        //if there is a left click, fires one time per click
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            //System.out.println("Left click at (" + Gdx.input.getX() + "," + Gdx.input.getY() + ")");
-            //System.out.println(gameBoard.getTileAt(Gdx.input.getX(), Gdx.input.getY()));
-            gameBoard.handleLeftClick(Gdx.input.getX(), Gdx.input.getY());
-        }
-        else if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
-            gameBoard.handleRightClick(Gdx.input.getX(), Gdx.input.getY());
+        if (gameOn){
+            //if there is a left click, fires one time per click
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                //System.out.println("Left click at (" + Gdx.input.getX() + "," + Gdx.input.getY() + ")");
+                //System.out.println(gameBoard.getTileAt(Gdx.input.getX(), Gdx.input.getY()));
+                gameBoard.handleLeftClick(Gdx.input.getX(), Gdx.input.getY());
+            }
+            else if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+                gameBoard.handleRightClick(Gdx.input.getX(), Gdx.input.getY());
+            }
         }
 
         else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
             gameBoard = new GameBoard(this);
             startTime = TimeUtils.nanoTime();
+            gameOn = true;
         }
     }
 
@@ -91,11 +105,22 @@ public class GameplayScreen implements Screen {
     }
 
     private void drawGUI() {
-        gameTimer = TimeUtils.nanoTime() - startTime;
-        defaultFont.draw(spriteBatch,"Time: " + gameTimer/1000000000, 450, 670);
-        defaultFont.draw(spriteBatch,"Total Bombs Left: " +  (gameBoard.getTotalBombs() - gameBoard.getNumFlagsPlaced()), 100, 670);
-        defaultFont.draw(spriteBatch,"Total Flags Placed: " +  gameBoard.getNumFlagsPlaced(), 650, 670);
-        defaultFont.draw(spriteBatch,"Press Enter to restart", 400, 200);
+        if (gameOn) {
+            gameTimer = TimeUtils.nanoTime() - startTime;
+            defaultFont.draw(spriteBatch,"Time: " + gameTimer/1000000000, 450, 670);
+            defaultFont.draw(spriteBatch,"Total Bombs Left: " +  (gameBoard.getTotalBombs() - gameBoard.getNumFlagsPlaced()), 100, 670);
+            defaultFont.draw(spriteBatch,"Total Flags Placed: " +  gameBoard.getNumFlagsPlaced(), 650, 670);
+            defaultFont.draw(spriteBatch,"Press Enter to restart", 400, 200);
+        }
+        else {
+            if (bombsFound) {
+                defaultFont.draw(spriteBatch,"Game LOST after " + gameTimer/1000000000 + " seconds!", 450, 670);
+            }
+            else{
+                defaultFont.draw(spriteBatch,"Game WON after " + gameTimer/1000000000 + " seconds!", 450, 670);
+            }
+            defaultFont.draw(spriteBatch,"Press Enter to restart", 400, 200);
+        }
     }
     /*
      * this method runs as fast as it can (or as fast as it can for a set FPS)
